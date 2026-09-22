@@ -41,48 +41,173 @@
 <body>
 
 <div class="box">
-  <h2>Login</h2>
+  <h2>Login / Signup</h2>
   <p>Continue with Google</p>
 
   <button class="google" onclick="login()">
-    Login with Google
+    Continue with Google
   </button>
 </div>
 
-<!-- Firebase -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "PASTE_YOUR_KEY",
-    authDomain: "PASTE_YOUR_DOMAIN",
-    projectId: "PASTE_YOUR_ID",
-  };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  const app = initializeApp(firebaseConfig);
+import { getFirestore, doc, getDoc, setDoc }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_KEY",
+  authDomain: "PASTE_YOUR_DOMAIN",
+  projectId: "PASTE_YOUR_ID",
+};
 
-  async function login() {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-      console.log(user);
+const provider = new GoogleAuthProvider();
 
-      // local storage में save
-      localStorage.setItem("user", JSON.stringify(user));
+async function login() {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
 
-      // redirect to chat
-      window.location.href = "chat.html";
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-    } catch (error) {
-      console.error(error);
+    // 🔥 अगर user नया है
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        email: user.email,
+        plan: "free",
+        amount: 0,
+        expiry: null,
+        createdAt: Date.now()
+      });
     }
+
+    // local storage
+    localStorage.setItem("user", JSON.stringify({
+      uid: user.uid,
+      email: user.email
+    }));
+
+    window.location.href = "chat.html";
+
+  } catch (error) {
+    console.error(error);
   }
+}
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .google {
+      background: white;
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Login / Signup</h2>
+  <p>Continue with Google</p>
+
+  <button class="google" onclick="login()">
+    Continue with Google
+  </button>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import { getFirestore, doc, getDoc, setDoc }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_KEY",
+  authDomain: "PASTE_YOUR_DOMAIN",
+  projectId: "PASTE_YOUR_ID",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const provider = new GoogleAuthProvider();
+
+async function login() {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    // 🔥 अगर user नया है
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        email: user.email,
+        plan: "free",
+        amount: 0,
+        expiry: null,
+        createdAt: Date.now()
+      });
+    }
+
+    // local storage
+    localStorage.setItem("user", JSON.stringify({
+      uid: user.uid,
+      email: user.email
+    }));
+
+    window.location.href = "chat.html";
+
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 </script>
 
