@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Chat</title>
+
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+    }
+
+    #chatBox {
+      width: 80%;
+      height: 300px;
+      margin: auto;
+      border: 1px solid gray;
+      overflow-y: scroll;
+      padding: 10px;
+    }
+
+    input {
+      width: 60%;
+      padding: 10px;
+    }
+
+    button {
+      padding: 10px;
+      background: cyan;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>🤖 Smart AI Agent</h2>
+
+<div id="chatBox"></div>
+
+<br>
+
+<input id="input" placeholder="Type message...">
+<button onclick="send()">Send</button>
+
+<script>
+
+function send() {
+  let msg = document.getElementById("input").value;
+  let box = document.getElementById("chatBox");
+
+  box.innerHTML += "<p>👤 You: " + msg + "</p>";
+
+  let reply = aiReply(msg);
+
+  box.innerHTML += "<p>🤖 AI: " + reply + "</p>";
+
+  document.getElementById("input").value = "";
+}
+
+function aiReply(msg) {
+  msg = msg.toLowerCase();
+
+  // 😎 Friendly + "चापलूसी" style
+  if (msg.includes("hi") || msg.includes("hello")) {
+    return "Hey! 😊 You are amazing! Tell me what you want to create today!";
+  }
+
+  if (msg.includes("video")) {
+    return "🔥 Wow! Great idea! Tell me your video topic, I will generate it for you!";
+  }
+
+  if (msg.includes("money")) {
+    return "💰 You can earn big with this AI! Let's build something powerful!";
+  }
+
+  return "✨ You are doing great! Tell me more...";
+}
+
+</script>
+
+</body>
+</html>
