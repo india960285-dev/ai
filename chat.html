@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Chat</title>
+  <title>AI Agent</title>
 
   <style>
     body {
@@ -13,11 +13,12 @@
 
     #chatBox {
       width: 80%;
-      height: 300px;
+      height: 350px;
       margin: auto;
       border: 1px solid gray;
-      overflow-y: scroll;
+      overflow-y: auto;
       padding: 10px;
+      text-align: left;
     }
 
     input {
@@ -35,48 +36,91 @@
 
 <body>
 
-<h2>🤖 Smart AI Agent</h2>
+<h2>AI Agent</h2>
 
 <div id="chatBox"></div>
 
 <br>
 
-<input id="input" placeholder="Type message...">
+<input id="input" placeholder="Type your answer...">
 <button onclick="send()">Send</button>
 
 <script>
 
+let step = 0;
+let userData = {};
+
+function startConversation() {
+  addMessage("AI", "Do you want business ideas?");
+  step = 1;
+}
+
 function send() {
   let msg = document.getElementById("input").value;
-  let box = document.getElementById("chatBox");
+  if (!msg) return;
 
-  box.innerHTML += "<p>👤 You: " + msg + "</p>";
-
-  let reply = aiReply(msg);
-
-  box.innerHTML += "<p>🤖 AI: " + reply + "</p>";
+  addMessage("User", msg);
+  handleFlow(msg.toLowerCase());
 
   document.getElementById("input").value = "";
 }
 
-function aiReply(msg) {
-  msg = msg.toLowerCase();
-
-  // 😎 Friendly + "चापलूसी" style
-  if (msg.includes("hi") || msg.includes("hello")) {
-    return "Hey! 😊 You are amazing! Tell me what you want to create today!";
-  }
-
-  if (msg.includes("video")) {
-    return "🔥 Wow! Great idea! Tell me your video topic, I will generate it for you!";
-  }
-
-  if (msg.includes("money")) {
-    return "💰 You can earn big with this AI! Let's build something powerful!";
-  }
-
-  return "✨ You are doing great! Tell me more...";
+function addMessage(sender, text) {
+  let box = document.getElementById("chatBox");
+  box.innerHTML += "<p><b>" + sender + ":</b> " + text + "</p>";
+  box.scrollTop = box.scrollHeight;
 }
+
+function handleFlow(msg) {
+
+  if (step === 1) {
+    if (msg.includes("yes")) {
+      addMessage("AI", "What type of business do you prefer? Online or offline?");
+      step = 2;
+    } else {
+      addMessage("AI", "Okay. What do you want to create?");
+      step = 10;
+    }
+  }
+
+  else if (step === 2) {
+    userData.type = msg;
+    addMessage("AI", "What is your budget?");
+    step = 3;
+  }
+
+  else if (step === 3) {
+    userData.budget = msg;
+    addMessage("AI", "Do you want a video explanation also?");
+    step = 4;
+  }
+
+  else if (step === 4) {
+    if (msg.includes("yes")) {
+      addMessage("AI", "Enter your video topic.");
+      step = 5;
+    } else {
+      finish();
+    }
+  }
+
+  else if (step === 5) {
+    userData.topic = msg;
+    finish();
+  }
+
+  else {
+    addMessage("AI", "Please follow the steps.");
+  }
+}
+
+function finish() {
+  addMessage("AI", "Your request is recorded.");
+  console.log("USER DATA:", userData);
+  step = 0;
+}
+
+startConversation();
 
 </script>
 
