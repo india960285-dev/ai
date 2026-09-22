@@ -1,90 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Chat</title>
-
-  <style>
-    body {
-      background: #0f172a;
-      color: white;
-      font-family: Arial;
-      text-align: center;
-    }
-
-    #chatBox {
-      width: 80%;
-      height: 300px;
-      margin: auto;
-      border: 1px solid gray;
-      overflow-y: scroll;
-      padding: 10px;
-    }
-
-    input {
-      width: 60%;
-      padding: 10px;
-    }
-
-    button {
-      padding: 10px;
-      background: cyan;
-      border: none;
-    }
-  </style>
+  <title>Redirect</title>
 </head>
 
 <body>
 
-<h2>AI Agent</h2>
-
-<div id="chatBox"></div>
-
-<br>
-
-<input id="input" placeholder="Type message...">
-<button onclick="send()">Send</button>
-
 <script>
+const user = JSON.parse(localStorage.getItem("user"));
 
-let videoMode = false;
-
-function send() {
-  let msg = document.getElementById("input").value;
-  let box = document.getElementById("chatBox");
-
-  box.innerHTML += "<p>You: " + msg + "</p>";
-
-  let reply = aiReply(msg);
-
-  box.innerHTML += "<p>AI: " + reply + "</p>";
-
-  document.getElementById("input").value = "";
-}
-
-function aiReply(msg) {
-  msg = msg.toLowerCase();
-
-  if (videoMode) {
-    videoMode = false;
-    saveVideoRequest(msg);
-    return "Your video request has been saved. Processing will start soon.";
-  }
-
-  if (msg.includes("video")) {
-    videoMode = true;
-    return "Please enter your video topic.";
-  }
-
-  return "Tell me what you want to create.";
-}
-
-function saveVideoRequest(topic) {
-  console.log("Video Topic:", topic);
-}
-function startApp() {
+if (user && user.uid) {
   window.location.href = "chat.html";
+} else {
+  window.location.href = "login.html";
 }
-
 </script>
 
 </body>
