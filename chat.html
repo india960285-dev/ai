@@ -39,6 +39,8 @@
 
 <h2>AI Agent</h2>
 
+<button onclick="logout()">Logout</button>
+
 <div id="chatBox"></div>
 
 <br>
@@ -46,17 +48,21 @@
 <input id="input" placeholder="Type your answer...">
 <button onclick="send()">Send</button>
 
-<!-- 🔴 MAIN SCRIPT -->
 <script>
 
-// 🔐 LOGIN CHECK (सबसे पहले)
+// 🔐 LOGIN CHECK
 const user = JSON.parse(localStorage.getItem("user"));
-
 if (!user) {
   window.location.href = "login.html";
 }
 
-// 🧠 CHAT SYSTEM
+// logout
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+// chat system
 let step = 0;
 let userData = {};
 
@@ -84,13 +90,8 @@ function addMessage(sender, text) {
 function handleFlow(msg) {
 
   if (step === 1) {
-    if (msg.includes("yes")) {
-      addMessage("AI", "What type of business do you prefer? Online or offline?");
-      step = 2;
-    } else {
-      addMessage("AI", "What do you want to create?");
-      step = 10;
-    }
+    addMessage("AI", "What type of business do you prefer?");
+    step = 2;
   }
 
   else if (step === 2) {
@@ -101,13 +102,13 @@ function handleFlow(msg) {
 
   else if (step === 3) {
     userData.budget = msg;
-    addMessage("AI", "Do you want a video also?");
+    addMessage("AI", "Do you want video?");
     step = 4;
   }
 
   else if (step === 4) {
     if (msg.includes("yes")) {
-      addMessage("AI", "Enter your video topic.");
+      addMessage("AI", "Enter video topic");
       step = 5;
     } else {
       finish();
@@ -118,57 +119,43 @@ function handleFlow(msg) {
     userData.topic = msg;
     finish();
   }
-
-  else {
-    addMessage("AI", "Please follow the steps.");
-  }
 }
 
-// 💾 SAVE DATA (Firebase ready)
-async function finish() {
-
-  if (!window.db) {
-    addMessage("AI", "Database not connected.");
-    return;
-  }
-
-  await addDoc(collection(db, "usersData"), {
-    email: user.email,
-    type: userData.type || "",
-    budget: userData.budget || "",
-    topic: userData.topic || "",
-    time: Date.now()
-  });
-
-  addMessage("AI", "Your request has been saved.");
-
-  console.log("Saved:", userData);
-
-  step = 0;
-}
-
-// 🚀 START
 startConversation();
 
 </script>
 
-<!-- 🔥 FIREBASE (तुम्हारा existing config यहाँ रहेगा) -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "PASTE_YOUR_KEY",
-    authDomain: "PASTE_YOUR_DOMAIN",
-    projectId: "PASTE_YOUR_ID",
-  };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_KEY",
+  authDomain: "PASTE_YOUR_DOMAIN",
+  projectId: "PASTE_YOUR_ID",
+};
 
-  window.db = db;
-  window.addDoc = addDoc;
-  window.collection = collection;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔥 plan check
+async function checkPlan() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+
+  if (snap.exists()) {
+    const data = snap.data();
+
+    document.getElementById("chatBox").innerHTML +=
+      "<p><b>Plan:</b> " + data.plan + " | Expiry: " + data.expiry + "</p>";
+  }
+}
+
+checkPlan();
+
 </script>
 
 </body>
