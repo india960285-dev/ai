@@ -1,109 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Agent Platform</title>
+  <title>AI Chat</title>
 
   <style>
     body {
-      margin: 0;
-      font-family: Arial;
       background: #0f172a;
       color: white;
-    }
-
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px 30px;
-      background: #020617;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-      color: cyan;
-    }
-
-    .hero {
+      font-family: Arial;
       text-align: center;
-      padding: 80px 20px;
     }
 
-    .hero h1 {
-      font-size: 40px;
+    #chatBox {
+      width: 80%;
+      height: 300px;
+      margin: auto;
+      border: 1px solid gray;
+      overflow-y: scroll;
+      padding: 10px;
     }
 
-    .hero p {
-      color: #94a3b8;
-      margin-top: 10px;
+    input {
+      width: 60%;
+      padding: 10px;
     }
 
-    .btn {
-      margin-top: 20px;
-      padding: 12px 20px;
+    button {
+      padding: 10px;
       background: cyan;
       border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .features {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 40px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      width: 250px;
-      border-radius: 10px;
-    }
-
-    .card h3 {
-      color: cyan;
     }
   </style>
 </head>
 
 <body>
 
-<div class="navbar">
-  <div class="logo">AI Agent</div>
-  <div>Home | Features | Contact</div>
-</div>
+<h2>AI Agent</h2>
 
-<div class="hero">
-  <h1>Create Smart AI Agents 🚀</h1>
-  <p>Chat, Understand Users & Generate Content Automatically</p>
-  <button class="btn" onclick="startApp()">Start Now</button>
-</div>
+<div id="chatBox"></div>
 
-<div class="features">
+<br>
 
-  <div class="card">
-    <h3>🤖 Chat Agent</h3>
-    <p>Talk with users like a human</p>
-  </div>
-
-  <div class="card">
-    <h3>🎥 Video Generator</h3>
-    <p>Create AI videos automatically</p>
-  </div>
-
-  <div class="card">
-    <h3>⚡ Smart Reply</h3>
-    <p>Instant AI-based responses</p>
-  </div>
-
-</div>
+<input id="input" placeholder="Type message...">
+<button onclick="send()">Send</button>
 
 <script>
-function startApp() {
-  alert("Next step: Chat system coming...");
+
+let videoMode = false;
+
+function send() {
+  let msg = document.getElementById("input").value;
+  let box = document.getElementById("chatBox");
+
+  box.innerHTML += "<p>You: " + msg + "</p>";
+
+  let reply = aiReply(msg);
+
+  box.innerHTML += "<p>AI: " + reply + "</p>";
+
+  document.getElementById("input").value = "";
 }
+
+function aiReply(msg) {
+  msg = msg.toLowerCase();
+
+  if (videoMode) {
+    videoMode = false;
+    saveVideoRequest(msg);
+    return "Your video request has been saved. Processing will start soon.";
+  }
+
+  if (msg.includes("video")) {
+    videoMode = true;
+    return "Please enter your video topic.";
+  }
+
+  return "Tell me what you want to create.";
+}
+
+function saveVideoRequest(topic) {
+  console.log("Video Topic:", topic);
+}
+
 </script>
 
 </body>
