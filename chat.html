@@ -44,7 +44,11 @@
 
 <input id="input" placeholder="Type your answer...">
 <button onclick="send()">Send</button>
+const user = JSON.parse(localStorage.getItem("user"));
 
+if (!user) {
+  window.location.href = "login.html";
+}
 <script>
 
 let step = 0;
